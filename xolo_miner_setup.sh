@@ -62,6 +62,10 @@ echo ""
 echo "  [0/5] Installing required packages."
 apt-get update &>/dev/null
 apt-get install yasm -y git make g++ build-essential libminiupnpc-dev libboost-all-dev libdb++-dev libgmp-dev libssl-dev dos2unix htop supervisor &>/dev/null
+# It seems that primeminer does not handle lboost_chrono and similar from newer libboost on lower distributions, so libboost 1.48 has to be installed for them. 
+# More info can be found here: http://www.peercointalk.org/index.php?topic=501.165
+# Do a check in the future here to see if this needs to be done.
+apt-get install -y libboost-chrono1.48-dev libboost-filesystem1.48-dev libboost-system1.48-dev libboost-program-options1.48-dev libboost-thread1.48-dev &>/dev/null
 
 echo "  [1/5] Downloading miner source from git"
 git clone https://github.com/thbaumbach/primecoin.git &>/dev/null
