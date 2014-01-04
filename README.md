@@ -11,12 +11,12 @@ wget https://raw.github.com/hak8or/xolo_miner_setup/master/xolo_miner_setup.sh
 
 chmod 777 xolo_miner_setup.sh
 
-sudo ./xolo_miner_setup.sh -a your-primecoin-wallet-address-goes-here
+sudo ./xolo_miner_setup.sh -a your-primecoin-wallet-address-goes-here -p pool-selection-goes-here (beeeeer or xram)
 ```
 
 example: 
 ```
-sudo ./xolo_miner_setup.sh -a AbFituYrzGLdsziL4g6Y2a2i5x19N1BZtT
+sudo ./xolo_miner_setup.sh -a AbFituYrzGLdsziL4g6Y2a2i5x19N1BZtT -p beeeeer
 ```
 
 This is the now used repo intended to replace the gist I was using earlier found [here](https://gist.github.com/hak8or/7798027)
