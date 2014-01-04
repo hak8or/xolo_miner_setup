@@ -16,7 +16,7 @@ sudo ./xolo_miner_setup.sh -a your-primecoin-wallet-address-goes-here -p pool-se
 
 example: 
 ```
-sudo ./xolo_miner_setup.sh -a AbFituYrzGLdsziL4g6Y2a2i5x19N1BZtT
+sudo ./xolo_miner_setup.sh -a AbFituYrzGLdsziL4g6Y2a2i5x19N1BZtT -p beeeeer
 ```
 
 This is the now used repo intended to replace the gist I was using earlier found [here](https://gist.github.com/hak8or/7798027)
