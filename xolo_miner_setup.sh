@@ -120,10 +120,10 @@ mkdir -p /var/log/supervisor >/dev/null
 touch /etc/supervisor/conf.d/primecoin.conf >/dev/null
 cat <<- _EOF_ >/etc/supervisor/conf.d/primecoin.conf
 [program:primecoin]
-	command=$HOME/primecoin/src/primeminer -pooluser=$PrimeCoin_Address -poolip=$Pool_IP -poolport=$Pool_Port -genproclimit=$Processor_Count -poolpassword=PASSWORD -poolshare=6
-	stdout_logfile=/var/log/supervisor/%(program_name)s.log
-	stderr_logfile=/var/log/supervisor/%(program_name)s.log
-	autorestart=true
+command=$HOME/primecoin/src/primeminer -pooluser=$PrimeCoin_Address -poolip=$Pool_IP -poolport=$Pool_Port -genproclimit=$Processor_Count -poolpassword=PASSWORD -poolshare=6
+stdout_logfile=/var/log/supervisor/%(program_name)s.log
+stderr_logfile=/var/log/supervisor/%(program_name)s.log
+autorestart=true
 _EOF_
 
 echo "  [5/6] Restarting supervisor"
