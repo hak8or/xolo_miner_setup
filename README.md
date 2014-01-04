@@ -11,7 +11,7 @@ wget https://raw.github.com/hak8or/xolo_miner_setup/master/xolo_miner_setup.sh
 
 chmod 777 xolo_miner_setup.sh
 
-sudo ./xolo_miner_setup.sh -a your-primecoin-wallet-address-goes-here
+sudo ./xolo_miner_setup.sh -a your-primecoin-wallet-address-goes-here -p pool-selection-goes-here (beeeeer or xram)
 ```
 
 example: 
