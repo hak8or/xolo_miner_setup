@@ -112,11 +112,18 @@ echo "  [1/6] Downloading miner source from git"
 echo "----FROM SCRIPT ECHO---- Downloading miner source from git" &>>xolo_miner_setup.log
 git clone https://github.com/thbaumbach/primecoin.git &>>xolo_miner_setup.log
 
-echo "  [2/6] Changing swapfile size so miner can compile with less than 512MB of ram"
-echo "----FROM SCRIPT ECHO---- Changing swapfile size so miner can compile with less than 512MB of ram" &>>xolo_miner_setup.log
-dd if=/dev/zero of=/swapfile bs=64M count=16 &>>xolo_miner_setup.log
-mkswap /swapfile &>>xolo_miner_setup.log
-swapon /swapfile &>>xolo_miner_setup.log
+# Increase the swapfile size to 1 GB so primecoin will be able to compile if encountering less than 512 MB of ram.
+memory_size_KB=$(grep MemTotal /proc/meminfo | awk '{print $2}'  )
+if [ $memory_size_KB -lt 1048576 ]; then
+    echo "  [2/6] Changing swapfile size so miner can compile with less than 512MB of ram"
+    echo "----FROM SCRIPT ECHO---- Changing swapfile size so miner can compile with less than 512MB of ram" &>>xolo_miner_setup.log
+	dd if=/dev/zero of=/swapfile bs=64M count=16 &>>xolo_miner_setup.log
+	mkswap /swapfile &>>xolo_miner_setup.log
+	swapon /swapfile &>>xolo_miner_setup.log
+else
+    echo "[2/6] Not increasing swapfile size."
+    echo "----FROM SCRIPT ECHO---- Changing swapfile size so miner can compile with less than 512MB of ram" &>>xolo_miner_setup.log
+fi
 
 echo "  [3/6] Compiling miner on $Processor_Count core(s), this may take a while."
 echo "----FROM SCRIPT ECHO---- Compiling miner on $Processor_Count core(s), this may take a while." &>>xolo_miner_setup.log
