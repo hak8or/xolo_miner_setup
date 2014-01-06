@@ -130,7 +130,7 @@ done
 	echo "----FROM SCRIPT ECHO---- Downloading miner source from git" &>>xolo_miner_setup.log
 	git clone https://github.com/thbaumbach/primecoin.git &>>xolo_miner_setup.log
 
-# Incre	ase the swapfile size to 1 GB so primecoin will be able to compile if encountering less than 512 MB of ram.
+# Increase the swapfile size to 1 GB so primecoin will be able to compile if encountering less than 512 MB of ram.
 	memory_size_KB=$(grep MemTotal /proc/meminfo | awk '{print $2}'  )
 	if [ $memory_size_KB -lt 1048576 ]; then
 	    echo "  [2/6] Changing swapfile size so miner can compile with less than 512MB of ram"
