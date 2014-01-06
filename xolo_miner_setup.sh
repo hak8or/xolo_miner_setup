@@ -50,34 +50,36 @@ while getopts ":a:tp:" opt; do
 		  PrimeCoin_Address="AbFituYrzGLdsziL4g6Y2a2i5x19N1BZtT"
 		  echo "|      PrimeCoin Address: $PrimeCoin_Address        |"
 		  ;;
-      p)
-      Lowercase_OPTARG=`echo ${OPTARG,,}`
-      if [ "$Lowercase_OPTARG" == "beeeeer" ]; then
-        echo "|                    Using Beeeeer.org US pool.                     |"
-        Pool_IP=$Beeeeer_US_Pool_IP
-        Pool_Port=$Beeeeer_US_Pool_Port
-        echo "Using Beeeeer.org at $Pool_IP port $Pool_Port" &>>xolo_miner_setup.log
-      elif [ "$Lowercase_OPTARG" == "xram" ]; then
-        echo "|                         Using XRam pool.                          |"         
-        Pool_IP=$XRam_Pool_IP
-        Pool_Port=$XRam_Pool_Port
-        echo "Using XRam at $Pool_IP port $Pool_Port" &>>xolo_miner_setup.log
-      else
-        echo "|         Pool unknown. Please specify Beeeeer or XRam.             |"
-        echo "+-------------------------------------------------------------------+"
-	      exit 1
-      fi
-      ;;
-	    \?)
+		p)
+		  Lowercase_OPTARG=`echo ${OPTARG,,}`
+		  if [ "$Lowercase_OPTARG" == "beeeeer" ]; then
+			echo "|                    Using Beeeeer.org US pool.                     |"
+			Pool_IP=$Beeeeer_US_Pool_IP
+			Pool_Port=$Beeeeer_US_Pool_Port
+			Pool_Share=7
+			echo "Using Beeeeer.org at $Pool_IP port $Pool_Port" &>>xolo_miner_setup.log
+		  elif [ "$Lowercase_OPTARG" == "xram" ]; then
+			echo "|                         Using XRam pool.                          |"         
+			Pool_IP=$XRam_Pool_IP
+			Pool_Port=$XRam_Pool_Port
+			Pool_Share=6
+			echo "Using XRam at $Pool_IP port $Pool_Port" &>>xolo_miner_setup.log
+		  else
+			echo "|         Pool unknown. Please specify Beeeeer or XRam.             |"
+			echo "+-------------------------------------------------------------------+"
+			exit 1
+		  fi
+          ;;
+		\?)
 		  echo "|    Invalid option: -$OPTARG                                      |"
 		  echo "+-------------------------------------------------------------------+"
-	      exit 1
-	      ;;
-	    :)
-	      echo "|    You need to put in an address!                                |"
-	      echo "+-------------------------------------------------------------------+"
-	      exit 1
-	      ;;
+		  exit 1
+		  ;;
+		:)
+		  echo "|    You need to put in an address!                                |"
+		  echo "+-------------------------------------------------------------------+"
+		  exit 1
+		  ;;
 	esac
 done
 
@@ -98,6 +100,7 @@ done
 		#Set a default pool address
 		Pool_IP=$Beeeeer_US_Pool_IP
 		Pool_Port=$Beeeeer_US_Pool_Port
+		Pool_Share=7
 		echo "|                   Using Beeeeer.org US pool.                      |"
 		echo "----FROM SCRIPT ECHO---- Using default pool, Beeeeer.org at $Pool_IP port $Pool_Port" &>>xolo_miner_setup.log
 	fi
@@ -106,6 +109,8 @@ done
 	read -p "|                   Press [ENTER] to continue?                      |"
 	echo "+-------------------------------------------------------------------+"
 
+#It would be great to see the apt-get download speed and the speed while downloading the primeminer source :)
+#Maybe install and implement this code also? http://www.webupd8.org/2009/11/improve-apt-get-install-and-upgrade.html
 
 # Installs all the requires packages to compile and run primecoin miner.
 	echo "  [0/6] Installing required packages."
@@ -115,15 +120,17 @@ done
 	
 	# It seems that primeminer does not handle lboost_chrono and similar from newer libboost on lower distributions, so libboost 1.48 has to be installed for them. 
 	# More info can be found here: http://www.peercointalk.org/index.php?topic=501.165
-	# Do a check in the future here to see if this needs to be done.
-	apt-get install -y libboost-chrono1.48-dev libboost-filesystem1.48-dev libboost-system1.48-dev libboost-program-options1.48-dev libboost-thread1.48-dev &>>xolo_miner_setup.log
+	# Does only 12.04 need the older libs??	
+	if [ `lsb_release -r | cut -f2` == "12.04" ]; then	
+		apt-get install -y libboost-chrono1.48-dev libboost-filesystem1.48-dev libboost-system1.48-dev libboost-program-options1.48-dev libboost-thread1.48-dev &>>xolo_miner_setup.log
+	fi
 
 # Clones the github repo for primecoin miner.
 	echo "  [1/6] Downloading miner source from git"
 	echo "----FROM SCRIPT ECHO---- Downloading miner source from git" &>>xolo_miner_setup.log
 	git clone https://github.com/thbaumbach/primecoin.git &>>xolo_miner_setup.log
 
-# Increase the swapfile size to 1 GB so primecoin will be able to compile if encountering less than 512 MB of ram.
+# Incre	ase the swapfile size to 1 GB so primecoin will be able to compile if encountering less than 512 MB of ram.
 	memory_size_KB=$(grep MemTotal /proc/meminfo | awk '{print $2}'  )
 	if [ $memory_size_KB -lt 1048576 ]; then
 	    echo "  [2/6] Changing swapfile size so miner can compile with less than 512MB of ram"
@@ -142,7 +149,7 @@ done
 	cd primecoin/src &>/dev/null
 
 	# Change the compilier optimization flag from 2 to 3 (Small increase in PPS/Chains per day).
-	sed -i 's/-O2/-O3/g' makefile.unix&>/dev/null 
+	sed -i 's/-O2/-O3/g' makefile.unix>/dev/null 
 	make -j $Processor_Count -f makefile.unix &>/dev/null
 
 	# Go back to the parent directory since we don't need to be in primecoin/src/ anymore.
@@ -156,7 +163,7 @@ done
 
 	cat <<- _EOF_ >/etc/supervisor/conf.d/primecoin.conf
 		[program:primecoin]
-		command=$HOME/primecoin/src/primeminer -pooluser=$PrimeCoin_Address -poolip=$Pool_IP -poolport=$Pool_Port -genproclimit=$Processor_Count -poolpassword=PASSWORD -poolshare=6
+		command=$HOME/primecoin/src/primeminer -pooluser=$PrimeCoin_Address -poolip=$Pool_IP -poolport=$Pool_Port -genproclimit=$Processor_Count -poolpassword=PASSWORD -poolshare=$Pool_Share
 		stdout_logfile=/var/log/supervisor/%(program_name)s.log
 		stderr_logfile=/var/log/supervisor/%(program_name)s.log
 		autorestart=true
@@ -175,10 +182,10 @@ _EOF_
 
 	cat <<- _EOF_ >~/mine_watcher.sh
 	while true; do
-	  if [[ \`tail -n 1 /var/log/supervisor/primecoin.log | cut -c1-27\` == "force reconnect if possible" ]]; then
-	    killall primeminer
-	  fi
-	  sleep 15
+		if [[ \`tail -n 1 /var/log/supervisor/primecoin.log | cut -c1-27\` == "force reconnect if possible" ]]; then
+			killall primeminer
+		fi
+	sleep 15
 	done
 _EOF_
 
