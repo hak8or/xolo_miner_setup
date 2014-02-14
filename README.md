@@ -74,5 +74,12 @@ root@hak8or2core:~# sudo xolo_miner_setup.sh -a AbFituYrzGLdsziL4g6Y2a2i5x19N1BZ
 +-------------------------------------------------------------------------------+
 ```
 
+Confirmed to be working on:
+- Ubuntu 12.04 (LTS)
+- Ubuntu 13.04
+- Ubuntu 13.10
+
+Does not work on:
+- Ubuntu 10.04 LTS
 
 This is the now used repo intended to replace the gist I was using earlier found [here](https://gist.github.com/hak8or/7798027)
